@@ -1,0 +1,124 @@
+# Employee Payroll System
+
+import random  # Importing a module to generate employee IDs
+
+class Employee:
+    """A class to represent an employee."""
+    def __init__(self, name: str, salary: float):
+        assert salary > 0, "Salary must be greater than zero"
+        self.name = name
+        self.salary = salary
+        self.tax_rate = 0.15  # Default tax rate
+        self.employee_id = random.randint(1000, 9999)
+
+    def calculate_net_salary(self):
+        """Calculate salary after tax deduction."""
+        tax = self.salary * self.tax_rate
+        return self.salary - tax
+
+    def display_info(self):
+        """Display employee details."""
+        print(f"Employee ID: {self.employee_id}, Name: {self.name}, Net Salary: {self.calculate_net_salary()}")
+
+    def update_salary(self, new_salary):
+        """Update salary if valid."""
+        if new_salary > 0:
+            self.salary = new_salary
+        else:
+            raise ValueError("Salary must be positive")
+
+# Global variable
+employees = []
+
+def add_employee(name, salary):
+    """Function to add an employee."""
+    global employees  # Using the global keyword
+    emp = Employee(name, salary)
+    employees.append(emp)
+
+def remove_employee(emp_id):
+    """Function to remove an employee by ID."""
+    global employees
+    for emp in employees:
+        if emp.employee_id == emp_id:
+            employees.remove(emp)
+            break
+    else:
+        print("Employee not found")
+
+def view_employees():
+    """Function to view all employees with their salaries."""
+    if not employees:
+        print("No employees found.")
+        return
+    print("\nEmployee List:")
+    for emp in employees:
+        print(f"ID: {emp.employee_id}, Name: {emp.name}, Salary: {emp.salary}")
+
+# Using a lambda function for quick calculations
+deduction = lambda salary: salary * 0.10  # Deduction calculation
+
+# Exception handling
+def process_payroll():
+    """Process payroll for all employees."""
+    try:
+        for emp in employees:
+            emp.display_info()
+            print(f"Additional Deduction: {deduction(emp.salary)}")
+    except Exception as e:
+        print(f"Error processing payroll: {e}")
+    finally:
+        print("Payroll processing complete.")
+
+# Using with statement for file handling
+def save_to_file():
+    """Save employee data to a file."""
+    with open("employees.txt", "w") as file:
+        for emp in employees:
+            file.write(f"{emp.employee_id},{emp.name},{emp.salary}\n")
+
+# Demonstrating control structures
+while True:
+    print("1. Add Employee")
+    print("2. Remove Employee")
+    print("3. View Employees")
+    print("4. Process Payroll")
+    print("5. Exit")
+    choice = input("Enter choice: ")
+    
+    if choice == "1":
+        name = input("Enter employee name: ")
+        try:
+            salary = float(input("Enter salary: "))
+            add_employee(name, salary)
+        except ValueError:
+            print("Invalid salary input")
+    elif choice == "2":
+        try:
+            emp_id = int(input("Enter Employee ID to remove: "))
+            remove_employee(emp_id)
+        except ValueError:
+            print("Invalid ID input")
+    elif choice == "3":
+        view_employees()
+    elif choice == "4":
+        process_payroll()
+    elif choice == "5":
+        break  # Exiting loop
+    else:
+        continue  # Invalid input, loop continues
+
+# Using yield
+def generate_report():
+    """Generator function to yield employee details."""
+    for emp in employees:
+        yield f"Report: {emp.name}, Salary: {emp.salary}"
+
+for report in generate_report():
+    print(report)
+
+# Deleting an object
+if employees:
+    del employees[0]  # Using del to remove an employee from the list
+
+print("Program Terminated.")
